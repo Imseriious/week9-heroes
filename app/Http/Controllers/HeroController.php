@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Hero;
+use App\Image;
+use App\Emergency;
 
 class HeroController extends Controller
 {
@@ -19,4 +22,40 @@ class HeroController extends Controller
         $view->hero = $hero;
         return $view;
     }
+
+    public function index()
+    {
+        $heroes = Hero::orderBy('name' , 'asc')->get();
+
+        return view('/hero/index', compact('heroes'));
+    }
+
+    public function create()
+    {
+        
+        
+        return view('hero/show', compact('emergency'));
+        
+    }
+
+    public function store(Request $request)
+    {
+        $emergency = new Emergency;
+
+        $hero = Hero::findOrFail(1);
+
+        $emergency->fill($request->only([
+            'subject', 
+            'description'
+        ]));
+
+        
+
+        $emergency->save();
+
+        session()->flash('success_message', 'Success!');
+
+        return redirect()->route('show', ['hero_slug' => $hero->name]);
+    }
 }
+
